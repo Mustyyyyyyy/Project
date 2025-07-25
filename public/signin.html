@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+            text-align: center;
+            padding: 20px;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+        .bbb {
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+   <div class="container mt-5 mb-5 p-3 rounded shadow bg-body-secondary d-flex flex-column align-items-center">
+        <h1>Sign In</h1>
+        <input type="text" id="email" placeholder="Email" style="border-radius: 5px; margin-right: 10px;" />
+        <input type="password" id="password" placeholder="Password" style="border-radius: 5px; margin-right: 10px;" />
+        <button onclick="SignIn()" class="bbb">Submit</button>
+
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+    import {
+      GithubAuthProvider,
+      GoogleAuthProvider,
+      getAuth,
+      signInWithPopup,
+      sendEmailVerification,
+      signInWithEmailAndPassword ,
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB084Kcz1oeckkJOdzulgu2mjHnjB7xCNQ",
+      authDomain: "auth-x-2.firebaseapp.com",
+      projectId: "auth-x-2",
+      storageBucket: "auth-x-2.appspot.com",
+      messagingSenderId: "887435842214",
+      appId: "1:887435842214:web:44162d426f3b8149425a67",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const googleProvider = new GoogleAuthProvider();
+
+
+    function SignG() {
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          console.log("Signed in with Google:", user);
+
+          sendEmailVerification(user)
+            .then(() => console.log("Verification email sent."))
+            .catch((error) => console.error("Verification error:", error));
+
+          user
+            ? (window.location.href = "dashboard.html")
+            : (window.location.href = "index.html");
+        })
+        .catch((error) => {
+          console.error("Google sign-in error:", error);
+          alert("Google sign-in failed.");
+        });
+    }
+
+
+    function SignIn() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("fill up goat.");
+      } else {
+        let userObj = {
+          email,
+          password,
+        }
+        console.log(userObj);
+        signInWithEmailAndPassword(auth, email, password)
+           .then((result) => {
+               const user = result.user;
+               console.log(user);
+               user ? (window.location.href = "dashboard.html")
+                 : (window.location.href = "index.html");
+      } )
+        .catch((err) => {
+          const code = err.code;
+          console.log(code);
+            if (code == "auth/email-already-in-use") {
+           alert('account already exists.');
+      }
+          if (code == "auth/password-does-not-meet-requirements") {
+          alert('Weak password.');
+      }
+        });
+    }
+    }
+
+    window.SignG = SignG;
+    window.SignIn = SignIn;
+  </script>
+</body>
+</html>
